@@ -17,3 +17,9 @@ pnpm add @prisma/client
 # dev tooling
 pnpm add -D prisma typescript ts-node-dev @types/node
 
+#  to overwrite the remote repository:
+git push -f origin main
+
+# Define your models in prisma/schema.prisma.
+Development with migrations: pnpm prisma migrate dev -n init && pnpm prisma generate
+Or push schema (no history, dev only): pnpm prisma db push && pnpm prisma generate
