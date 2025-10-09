@@ -1,8 +1,9 @@
 import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import * as bcrypt from 'bcrypt';
-import { UserService } from '../user/user.service';
-import { User } from '../user/user.model';
+import { UserService } from '../user';
+import { User } from '../models';
+import { APP_CONSTANTS } from '../shared';
 
 @Injectable()
 export class AuthService {
@@ -15,23 +16,24 @@ export class AuthService {
     email: string,
     password: string,
     name?: string,
-  ): Promise<Pick<User, 'id' | 'email' | 'name'>> {
+  ): Promise<User> {
     const existing = await this.userService.findByEmail(email);
     if (existing) throw new UnauthorizedException('Email already registered');
-    const hashed = await bcrypt.hash(password, 10);
+    const hashed = await bcrypt.hash(password, APP_CONSTANTS.BCRYPT_ROUNDS);
     const user = await this.userService.create({
       email,
       password: hashed,
       name,
     });
-    return { id: user.id, email: user.email, name: user.name };
+    // Return the created user. GraphQL model doesn't expose password, so it's safe.
+    return user;
   }
 
   async login(
     email: string,
     password: string,
   ): Promise<{ access_token: string }> {
-    const user = await this.userService.findByEmail(email);
+    const user = await this.userService.findByEmailWithPassword(email);
     if (!user) throw new UnauthorizedException('Invalid email');
     const valid = await bcrypt.compare(password, user.password ?? '');
     if (!valid) throw new UnauthorizedException('Invalid password');

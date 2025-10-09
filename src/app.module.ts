@@ -7,6 +7,8 @@ import type { Request } from 'express';
 
 import { AuthModule } from './auth';
 import { UserModule } from './user';
+import { LessonModule } from './lesson';
+import { QuizModule } from './quiz';
 import { ConfigModule } from './config/config.module';
 
 @Module({
@@ -19,6 +21,8 @@ import { ConfigModule } from './config/config.module';
     }),
     AuthModule,
     UserModule,
+    LessonModule,
+    QuizModule,
   ],
 })
 export class AppModule {}

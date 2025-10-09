@@ -1,6 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { PrismaService } from '../prisma/prisma.service';
-import { Prisma, User } from '../../generated/prisma';
+import { Prisma } from '../../generated/prisma';
+import { User } from '../models';
 
 @Injectable()
 export class UserService {
@@ -15,6 +16,26 @@ export class UserService {
       throw new Error('Invalid email value provided');
     }
     return this.prisma.user.findUnique({ where: { email } });
+  }
+
+  // For auth: include password to verify credentials
+  findByEmailWithPassword(
+    email: string,
+  ): Promise<(User & { password: string | null }) | null> {
+    if (typeof email !== 'string' || email.trim().length === 0) {
+      throw new Error('Invalid email value provided');
+    }
+    return this.prisma.user.findUnique({
+      where: { email },
+      select: {
+        id: true,
+        email: true,
+        name: true,
+        createdAt: true,
+        updatedAt: true,
+        password: true,
+      },
+    }) as unknown as Promise<(User & { password: string | null }) | null>;
   }
 
   findAll(): Promise<User[]> {

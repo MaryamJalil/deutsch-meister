@@ -1,16 +1,7 @@
-import { Resolver, Mutation, Args, ObjectType, Field } from '@nestjs/graphql';
+import { Resolver, Mutation, Args } from '@nestjs/graphql';
 import { AuthService } from './auth.service';
-import { User } from '../user/user.model';
-import { UserService } from '../user/user.service';
-
-@ObjectType()
-class AuthResponse {
-  @Field()
-  access_token: string;
-
-  @Field(() => User, { nullable: true })
-  user?: User;
-}
+import { UserService } from '../user';
+import { User, AuthResponse } from '../models';
 
 @Resolver()
 export class AuthResolver {

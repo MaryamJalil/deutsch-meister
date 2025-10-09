@@ -22,3 +22,23 @@ model User {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
 }
+
+model Quiz{
+  id Int  @id @default(autoincrement())
+  question String
+  options String[]
+  answer String
+  level String
+  lessonId Int?
+  lesson Lesson?  @relation (fields:[lessonId],references :[id])
+  createdAt DateTime @default(now())
+}
+model Lesson{
+  id Int @id @default(autoincrement())
+  title String
+  level String
+  content String?
+  createdAt DateTime @default(now())
+  quizzes Quiz[]
+}
+

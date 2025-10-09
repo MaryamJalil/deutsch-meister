@@ -6,6 +6,32 @@ type User {
   id: Int!
   email: String!
   name: String
+  createdAt: DateTime!
+  updatedAt: DateTime!
+}
+
+"""
+A date-time string at UTC, such as 2019-12-03T09:54:33Z, compliant with the date-time format.
+"""
+scalar DateTime
+
+type Quiz {
+  id: Int!
+  question: String!
+  options: [String!]!
+  answer: String!
+  level: String!
+  lessonId: Int
+  createdAt: DateTime!
+}
+
+type Lesson {
+  id: Int!
+  title: String!
+  level: String!
+  content: String
+  quizzes: [Quiz!]
+  createdAt: DateTime!
 }
 
 type AuthResponse {
@@ -15,10 +41,23 @@ type AuthResponse {
 
 type Query {
   helloUser: String!
+  lessons: [Lesson!]!
+  lessonsByLevel(level: String!): [Lesson!]!
+  lesson(id: Int!): Lesson
+  quizzes: [Quiz!]!
+  quizzesByLevel(level: String!): [Quiz!]!
+  quizzesByLesson(lessonId: Int!): [Quiz!]!
+  quiz(id: Int!): Quiz
 }
 
 type Mutation {
   register(email: String!, password: String!, name: String): User!
   login(email: String!, password: String!): AuthResponse!
   deleteUser(id: Int!): String!
+  createLesson(title: String!, level: String!, content: String): Lesson!
+  updateLesson(id: Int!, title: String, level: String, content: String): Lesson!
+  deleteLesson(id: Int!): Lesson!
+  createQuiz(question: String!, options: [String!]!, answer: String!, level: String!, lessonId: Int): Quiz!
+  updateQuiz(id: Int!, question: String, options: [String!], answer: String, level: String, lessonId: Int): Quiz!
+  deleteQuiz(id: Int!): Quiz!
 }
