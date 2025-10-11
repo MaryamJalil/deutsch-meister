@@ -1,4 +1,5 @@
 import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { BadRequestException } from '@nestjs/common';
 import { Quiz } from '../models';
 import { QuizService } from './quiz.service';
 
@@ -6,6 +7,76 @@ import { QuizService } from './quiz.service';
 export class QuizResolver {
   constructor(private readonly quizService: QuizService) {}
 
+  // Helpers
+  private validateOptionsAndAnswer(options?: string[], answer?: string): void {
+    if (options !== undefined) {
+      if (!Array.isArray(options) || options.length === 0) {
+        throw new BadRequestException('options must be a non-empty array of strings');
+      }
+      if (options.some((o) => typeof o !== 'string' || o.trim() === '')) {
+        throw new BadRequestException('each option must be a non-empty string');
+      }
+    }
+
+    if (answer !== undefined) {
+      if (typeof answer !== 'string' || answer.trim() === '') {
+        throw new BadRequestException('answer must be a non-empty string');
+      }
+      if (options !== undefined && !options.includes(answer)) {
+        throw new BadRequestException('answer must be one of the provided options');
+      }
+    }
+  }
+
+  private buildCreateData(params: {
+    question: string;
+    options: string[];
+    answer: string;
+    level: string;
+    lessonId?: number;
+  }) {
+    const { question, options, answer, level, lessonId } = params;
+    const data: {
+      question: string;
+      options: string[];
+      answer: string;
+      level: string;
+      lesson?: { connect: { id: number } };
+    } = { question, options, answer, level };
+
+    if (lessonId !== undefined) {
+      data.lesson = { connect: { id: lessonId } };
+    }
+
+    return data;
+  }
+
+  private buildUpdateData(params: {
+    question?: string;
+    options?: string[];
+    answer?: string;
+    level?: string;
+    lessonId?: number;
+  }) {
+    const { question, options, answer, level, lessonId } = params;
+    const data: {
+      question?: string;
+      options?: string[];
+      answer?: string;
+      level?: string;
+      lesson?: { connect: { id: number } };
+    } = {};
+
+    if (question !== undefined) data.question = question;
+    if (options !== undefined) data.options = options;
+    if (answer !== undefined) data.answer = answer;
+    if (level !== undefined) data.level = level;
+    if (lessonId !== undefined) data.lesson = { connect: { id: lessonId } };
+
+    return data;
+  }
+
+  // Queries
   @Query(() => [Quiz])
   async quizzes(): Promise<Quiz[]> {
     return this.quizService.findAll();
@@ -32,6 +103,7 @@ export class QuizResolver {
     return this.quizService.findById(id);
   }
 
+  // Mutations
   @Mutation(() => Quiz)
   async createQuiz(
     @Args('question', { type: () => String }) question: string,
@@ -40,24 +112,17 @@ export class QuizResolver {
     @Args('level', { type: () => String }) level: string,
     @Args('lessonId', { type: () => Int, nullable: true }) lessonId?: number,
   ): Promise<Quiz> {
-    const createData: {
-      question: string;
-      options: string[];
-      answer: string;
-      level: string;
-      lesson?: { connect: { id: number } };
-    } = {
+    this.validateOptionsAndAnswer(options, answer);
+
+    const createData = this.buildCreateData({
       question,
       options,
       answer,
       level,
-    };
+      lessonId,
+    });
 
-    if (lessonId !== undefined) {
-      createData.lesson = { connect: { id: lessonId } };
-    }
-
-    return this.quizService.create(createData);
+    return this.quizService.create(createData as any);
   }
 
   @Mutation(() => Quiz)
@@ -70,22 +135,17 @@ export class QuizResolver {
     @Args('level', { type: () => String, nullable: true }) level?: string,
     @Args('lessonId', { type: () => Int, nullable: true }) lessonId?: number,
   ): Promise<Quiz> {
-    const updateData: {
-      question?: string;
-      options?: string[];
-      answer?: string;
-      level?: string;
-      lesson?: { connect: { id: number } } | { disconnect: true };
-    } = {};
-    if (question !== undefined) updateData.question = question;
-    if (options !== undefined) updateData.options = options;
-    if (answer !== undefined) updateData.answer = answer;
-    if (level !== undefined) updateData.level = level;
-    if (lessonId !== undefined) {
-      updateData.lesson = { connect: { id: lessonId } };
-    }
+    this.validateOptionsAndAnswer(options, answer);
 
-    return this.quizService.update(id, updateData);
+    const updateData = this.buildUpdateData({
+      question,
+      options,
+      answer,
+      level,
+      lessonId,
+    });
+
+    return this.quizService.update(id, updateData as any);
   }
 
   @Mutation(() => Quiz)

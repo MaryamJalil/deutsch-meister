@@ -39,6 +39,16 @@ type AuthResponse {
   user: User
 }
 
+type Progress {
+  id: Int!
+  xp: Int!
+  streak: Int!
+  lessons: Int!
+  updatedAt: DateTime!
+  lastActive: DateTime!
+  user: User!
+}
+
 type Query {
   helloUser: String!
   lessons: [Lesson!]!
@@ -57,7 +67,9 @@ type Mutation {
   createLesson(title: String!, level: String!, content: String): Lesson!
   updateLesson(id: Int!, title: String, level: String, content: String): Lesson!
   deleteLesson(id: Int!): Lesson!
+  completeLesson(lessonId: Int!): Progress!
   createQuiz(question: String!, options: [String!]!, answer: String!, level: String!, lessonId: Int): Quiz!
   updateQuiz(id: Int!, question: String, options: [String!], answer: String, level: String, lessonId: Int): Quiz!
   deleteQuiz(id: Int!): Quiz!
+  updateUserProgress(xp: Int!, streak: Int!, lessons: Int!): Progress!
 }

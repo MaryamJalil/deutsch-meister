@@ -10,6 +10,7 @@ import { UserModule } from './user';
 import { LessonModule } from './lesson';
 import { QuizModule } from './quiz';
 import { ConfigModule } from './config/config.module';
+import { ProgressModule } from './progress/progress.module';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { ConfigModule } from './config/config.module';
     UserModule,
     LessonModule,
     QuizModule,
+    ProgressModule
   ],
 })
 export class AppModule {}

@@ -21,6 +21,7 @@ model User {
   name      String?
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
+  progress Progress?
 }
 
 model Quiz{
@@ -42,3 +43,16 @@ model Lesson{
   quizzes Quiz[]
 }
 
+model Progress {
+  id          Int       @id @default(autoincrement())
+  userId      Int       @unique 
+  user        User      @relation(fields: [userId], references: [id])
+  xp          Int       @default(0)              // Total experience points
+  streak      Int       @default(0)              // Consecutive active learning days
+  lessonsDone Int       @default(0)              // Number of lessons completed
+  quizzesDone Int       @default(0)              // Number of quizzes completed
+  lastActive  DateTime?                          // Last day user was active
+  createdAt   DateTime  @default(now())
+  updatedAt   DateTime  @updatedAt
+  
+}

@@ -29,17 +29,33 @@ export class AuthService {
     return user;
   }
 
-  async login(
-    email: string,
-    password: string,
-  ): Promise<{ access_token: string }> {
-    const user = await this.userService.findByEmailWithPassword(email);
-    if (!user) throw new UnauthorizedException('Invalid email');
-    const valid = await bcrypt.compare(password, user.password ?? '');
-    if (!valid) throw new UnauthorizedException('Invalid password');
-    const token = await this.jwt.signAsync({ sub: user.id, email: user.email });
-    return { access_token: token };
+  // async login(
+  //   email: string,
+  //   password: string,
+  // ): Promise<{ access_token: string }> {
+  //   const user = await this.userService.findByEmailWithPassword(email);
+  //   if (!user) throw new UnauthorizedException('Invalid email');
+  //   const valid = await bcrypt.compare(password, user.password ?? '');
+  //   if (!valid) throw new UnauthorizedException('Invalid password');
+  //   const token = await this.jwt.signAsync({ sub: user.id, email: user.email });
+  //   return { access_token: token };
+  // }
+
+  // src/auth/auth.service.ts
+async login(email: string, password: string): Promise<{ access_token: string }> {
+  const user = await this.userService.findByEmailWithPassword(email);
+  if (!user || !user.password) {
+    throw new UnauthorizedException('Invalid credentials');
   }
+
+  const valid = await bcrypt.compare(password, user.password);
+  if (!valid) throw new UnauthorizedException('Invalid credentials');
+
+  const payload = { sub: user.id, email: user.email };
+  const token = await this.jwt.signAsync(payload);
+  return { access_token: token };
+}
+
 
   verifyToken(token: string): unknown {
     return this.jwt.verify(token, { secret: process.env.JWT_SECRET });

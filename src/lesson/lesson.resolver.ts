@@ -1,10 +1,20 @@
-import { Resolver, Query, Mutation, Args, Int } from '@nestjs/graphql';
+import { Resolver, Query, Mutation, Args, Int, Context } from '@nestjs/graphql';
 import { Lesson } from '../models';
 import { LessonService } from './lesson.service';
+import { UseGuards } from '@nestjs/common';
+import { GqlAuthGuard } from 'src/auth/gql-auth.guard';
+import { ProgressService } from 'src/progress/progress.service';
+import { Progress } from 'src/models/progress.model';
+import { CurrentUser } from 'src/auth/current-user.decorator';
+import  type { JwtPayload } from 'src/auth/jwt-payload.interface';
+
 
 @Resolver(() => Lesson)
 export class LessonResolver {
-  constructor(private readonly lessonService: LessonService) {}
+  constructor(
+    private readonly lessonService: LessonService,
+    private readonly progressService: ProgressService,
+  ) {}
 
   @Query(() => [Lesson])
   async lessons(): Promise<Lesson[]> {
@@ -59,4 +69,22 @@ export class LessonResolver {
   ): Promise<Lesson> {
     return this.lessonService.delete(id);
   }
+
+
+  @Mutation(() => Progress)
+  @UseGuards(GqlAuthGuard)
+  async completeLesson(
+    @CurrentUser() user: JwtPayload,
+    @Args('lessonId', { type: () => Int }) lessonId: number,
+  ): Promise<Progress> {
+    console.log(user,'user1')
+    const lesson = await this.lessonService.findById(lessonId);
+    console.log(lesson,'lesson34')
+    if (!lesson) {
+      throw new Error(`Lesson with ID ${lessonId} not found`);
+    }
+
+    return await this.progressService.completeLesson(user.sub);
+  }
 }
+

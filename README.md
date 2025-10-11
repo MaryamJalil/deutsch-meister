@@ -23,3 +23,9 @@ git push -f origin main
 # Define your models in prisma/schema.prisma.
 Development with migrations: pnpm prisma migrate dev -n init && pnpm prisma generate
 Or push schema (no history, dev only): pnpm prisma db push && pnpm prisma generate
+
+# To generate tables
+ pnpm prisma generate
+
+# To add progress tables
+ pnpm prisma migrate dev --name add_progress_model
