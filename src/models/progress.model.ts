@@ -1,10 +1,13 @@
 import { ObjectType, Field, Int } from '@nestjs/graphql';
-import { User } from './user.model'
+import { User } from './user.model';
 
 @ObjectType()
 export class Progress {
   @Field(() => Int)
   id: number;
+
+  @Field(() => Int)
+  userId: number;
 
   @Field(() => Int)
   xp: number; // total experience points earned by the user
@@ -13,14 +16,26 @@ export class Progress {
   streak: number; // number of consecutive active days
 
   @Field(() => Int)
-  lessons: number; // number of lessons completed
+  lessonsDone: number; // number of lessons completed
 
-  @Field()
-  updatedAt: Date; // last time progress was updated
+  @Field(() => Int)
+  quizzesDone: number; // number of quizzes completed
 
+  @Field(() => Date)
+  lastActive: Date; // last time user was active
 
-  @Field()
-  lastActive: Date; // last time progress was updated
+  @Field(() => Date)
+  createdAt: Date;
+
+  @Field(() => Date)
+  updatedAt: Date;
+
+  // Computed fields (you can add these)
+  @Field(() => Int, { nullable: true })
+  level?: number; // calculated level based on XP
+
+  @Field(() => Int, { nullable: true })
+  levelProgress?: number; // progress to next level (0-1)
 
   // Relation to User
   @Field(() => User)
