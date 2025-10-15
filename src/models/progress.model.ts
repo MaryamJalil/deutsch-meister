@@ -1,4 +1,4 @@
-import { ObjectType, Field, Int } from '@nestjs/graphql';
+import { ObjectType, Field, Int, Float } from '@nestjs/graphql';
 import { User } from './user.model';
 
 @ObjectType()
@@ -34,7 +34,7 @@ export class Progress {
   @Field(() => Int, { nullable: true })
   level?: number; // calculated level based on XP
 
-  @Field(() => Int, { nullable: true })
+  @Field(() => Float, { nullable: true })
   levelProgress?: number; // progress to next level (0-1)
 
   // Relation to User

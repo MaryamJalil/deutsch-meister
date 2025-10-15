@@ -11,20 +11,25 @@ import { LessonModule } from './lesson';
 import { QuizModule } from './quiz';
 import { ConfigModule } from './config/config.module';
 import { ProgressModule } from './progress/progress.module';
+import { AwsModule } from './aws/aws.module';
+import { AudioModule } from './audio/audio.module';
 
 @Module({
   imports: [
     ConfigModule,
     GraphQLModule.forRoot<ApolloDriverConfig>({
       driver: ApolloDriver,
-      autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
+      autoSchemaFile:true,
+      // autoSchemaFile: join(process.cwd(), 'src/schema.gql'),
       context: ({ req }: { req: Request }) => ({ req }),
     }),
     AuthModule,
     UserModule,
     LessonModule,
     QuizModule,
-    ProgressModule
+    ProgressModule,
+    AwsModule,
+    AudioModule
   ],
 })
 export class AppModule {}

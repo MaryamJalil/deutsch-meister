@@ -41,6 +41,7 @@ model Lesson{
   content String?
   createdAt DateTime @default(now())
   quizzes Quiz[]
+  audios Audio[]
 }
 
 model Progress {
@@ -54,4 +55,14 @@ model Progress {
   lastActive  DateTime?                          // Last day user was active
   createdAt   DateTime  @default(now())
   updatedAt   DateTime  @updatedAt
+}
+
+model Audio {
+  id          String   @id @default(cuid())
+  filename    String
+  s3Key       String   @unique
+  url         String
+  createdAt   DateTime @default(now())
+  lessonId    Int?     // optional relation to Lesson
+  lesson      Lesson?     @relation(fields: [lessonId], references: [id])
 }

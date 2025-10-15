@@ -29,3 +29,5 @@ Or push schema (no history, dev only): pnpm prisma db push && pnpm prisma genera
 
 # To add progress tables
  pnpm prisma migrate dev --name add_progress_model
+
+ npx prisma migrate dev --name add_audio_model

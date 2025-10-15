@@ -85,6 +85,7 @@ type Query {
   quizzesByLesson(lessonId: Int!): [Quiz!]!
   quiz(id: Int!): Quiz
   getUserProgress: Progress!
+  getAudioUrl(id: "audio_id_here")
 }
 
 type Mutation {
@@ -99,17 +100,7 @@ type Mutation {
   deleteQuiz(id: Int!): Quiz!
   completeLesson(accuracy: Int): Progress!
   completeQuiz(score: Int): Progress!
-  updateUserProgress(
-    # Direct value updates (backward compatible)
-    xp: Int
-    streak: Int
-    lessons: Int
-    
-    # Activity-based automatic XP calculation
-    activityType: ActivityType
-    accuracy: Int
-    score: Int
-  ): Progress!
-
   updateUserProgress(xp: Int, streak: Int, lessons: Int, activityType: String, accuracy: Int, score: Int): Progress!
+  uploadAudio(file: $file)
+
 }
