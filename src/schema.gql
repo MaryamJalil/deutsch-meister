@@ -101,6 +101,6 @@ type Mutation {
   completeLesson(accuracy: Int): Progress!
   completeQuiz(score: Int): Progress!
   updateUserProgress(xp: Int, streak: Int, lessons: Int, activityType: String, accuracy: Int, score: Int): Progress!
-  uploadAudio(file: $file)
+  uploadAudio(file: $file, lessonId: $lessonId)
 
 }
